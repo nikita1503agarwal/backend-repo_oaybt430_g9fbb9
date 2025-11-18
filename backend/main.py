@@ -2,6 +2,8 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr, Field
+from typing import Optional
+
 from database import create_document
 
 app = FastAPI(title="AION Artist API")
@@ -29,6 +31,7 @@ class ContactMessage(BaseModel):
 
 @app.post("/api/contact")
 def contact(msg: ContactMessage):
+    # store in DB
     doc_id = create_document("contact", msg)
     return {"status": "ok", "id": doc_id}
 
@@ -67,6 +70,7 @@ def test_database():
     except Exception as e:
         response["database"] = f"❌ Error: {str(e)[:50]}"
     
+    import os
     response["database_url"] = "✅ Set" if os.getenv("DATABASE_URL") else "❌ Not Set"
     response["database_name"] = "✅ Set" if os.getenv("DATABASE_NAME") else "❌ Not Set"
     
